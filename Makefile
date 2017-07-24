@@ -1,8 +1,9 @@
 install:
-        npm install
+	npm install
 start:
-        npm run babel-node -- src/bin/gendiff.js
+	npm run babel-node -- src/bin/gendiff.js
 publish:
-        npm publish
+	npm publish
 lint:
-        npm run eslint -- src
+	npm run eslint -- src
+
