@@ -1,6 +1,6 @@
 # project-lvl2-s105
 
-The program compares two ini, json or yml files and  the difference.
+The program compares two ini, json or yml files and shows the difference.
 
 npm install gendiff-rbt200
 
