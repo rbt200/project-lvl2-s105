@@ -1,8 +1,8 @@
 {
   "name": "gendiff-rbt200",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Compare two config files and show the difference.",
-  "main": "index.js",
+  "main": "dis/index.js",
   "bin": {
     "gendiff": "dist/bin/gendiff.js"
   },
