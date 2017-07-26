@@ -1,6 +1,6 @@
 {
   "name": "gendiff-rbt200",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Compare two config files and show the difference.",
   "main": "dist/index.js",
   "bin": {
@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "commander": "*",
+    "ini": "^1.3.4",
     "js-yaml": "^3.9.0",
     "lodash": "*"
   }
