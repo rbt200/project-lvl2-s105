@@ -1,6 +1,6 @@
 import gendiff from '../src';
 
-const generatePath = name => `./__tests__/fixtures/json/${name}.json`;
+const generatePath = (name, type) => `./__tests__/fixtures/${type}/${name}.${type}`;
 
 describe('gendiff tests', () => {
   const result = `{
@@ -12,8 +12,8 @@ describe('gendiff tests', () => {
 }`;
 
   it('Compare two .json files', () => {
-    const before = generatePath('before');
-    const after = generatePath('after');
+    const before = generatePath('before', 'json');
+    const after = generatePath('after', 'json');
     expect(gendiff(before, after)).toBe(result);
   });
 });
