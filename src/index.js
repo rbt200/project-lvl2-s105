@@ -1,9 +1,10 @@
-import fs from 'fs';
 import astRender from './astRender';
 import astBuilder from './astBuilder';
+import getParser from './parser';
+import adapter from './adapter';
 
 export default (file1, file2) => {
-  const obj1 = JSON.parse(fs.readFileSync(file1, 'utf-8'));
-  const obj2 = JSON.parse(fs.readFileSync(file2, 'utf-8'));
+  const obj1 = adapter(file1, getParser(file1));
+  const obj2 = adapter(file2, getParser(file2));
   return astRender(astBuilder(obj1, obj2));
 };
