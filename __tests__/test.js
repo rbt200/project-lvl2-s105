@@ -22,4 +22,10 @@ describe('gendiff tests', () => {
     const after = generatePath('after', 'yml');
     expect(gendiff(before, after)).toBe(result);
   });
+
+  it('Compare two .ini files', () => {
+    const before = generatePath('before', 'yml');
+    const after = generatePath('after', 'yml');
+    expect(gendiff(before, after)).toBe(result);
+  });
 });
