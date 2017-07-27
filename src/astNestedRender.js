@@ -4,77 +4,53 @@ const newLine = '\n';
 const insertWSpace = quantity => _.repeat(' ', 1 + quantity);
 
 const convertType = (data) => {
-  switch (data) {
-    case 'changed':
-      return '  + ';
-    case 'added':
-      return '  + ';
-    case 'removed':
-      return '  - ';
-    default:
-      return '    ';
-  }
+  const graphicalTypePresentation = {
+    changed: '  + ',
+    added: '  + ',
+    removed: '  - ',
+  };
+  return graphicalTypePresentation[data] || '    ';
 };
 
-/*
 const stringBuilder = (obj, shift = 0) => {
-    console.log(obj);
-  if (obj.type === 'nested') {
-    // console.log(obj.children);
-    return obj.children.reduce((acc, item) => {
-      // console.log(item);
-      return `${acc}${stringBuilder(item, 4)}`;
-     // console.log(item);
-    }, '');
-    //return stringBuilder(obj.children);
+  if (!obj.children) {
+    const valOld = obj.valueOld;
+    const valNew = obj.valueNew;
+    const objTemp = valOld !== undefined ? valOld : valNew;
+    const key = _.keys(objTemp);
+    return `${newLine}${insertWSpace(shift + 4)}${key}: ${objTemp[key]}`;
   }
-  if (obj.type !== 'nested') {
-    // if () {}
-    // console.log(obj.valueOld);
-    // console.log(obj.valueNew);
-    if (_.isObject(obj.valueOld) || _.isObject(obj.valueNew)) {
-      const item = obj.valueOld !== undefined ? obj.valueOld : obj.valueNew;
-      const key = _.keys(item);
-      return `${newLine}${insertWSpace(shift)}${key}: ${item[key]}`;
-    } else {
-      if (obj.valueOld === obj.valueNew) {
-        // console.log(`${obj.key}: ${obj.valueOld}`);
-        return `${newLine}${insertWSpace(shift + 3)}${obj.key}: ${obj.valueOld}`;
-      } else {        
-        if (obj.type === 'changed') {
-          // console.log(obj);
-          return `${newLine}${insertWSpace(shift - 1)}${convertType(obj.type)}${obj.key}: ${obj.valueNew}` +
-          `${newLine}${insertWSpace(shift - 1)}${convertType('removed')}${obj.key}: ${obj.valueOld}` ;
-        } else {
-          //console.log(obj);
-          return `${newLine}${insertWSpace(shift - 1)}${convertType(obj.type)}${obj.key}: ${obj.valueNew === undefined ? obj.valueOld : obj.valueNew}`;
-        }        
-      }
-      
-    }
-  }
-};
-*/
 
-const stringBuilder = (obj, shift = 0) =>
-  _.reduce(obj, (acc, item) => {
-    const status = convertType(item.type);
-    if (!item.children) {
-      const str = `${acc}${newLine}${insertWSpace(shift)}${status}${item.key}: ${item.value}`;
-      if (item.status === 'updated') {
-        return str.concat(`${newLine}${insertWSpace(shift)}${convertStatus('removed')}${item.key}: ${item.update}`);
-      }
-      return str;
+  return _.reduce(obj.children, (acc, item) => {
+    const iKey = item.key;
+    const iType = item.type;
+    const iOld = item.valueOld;
+    const iNew = item.valueNew;
+    const graphTypeMapping = convertType(iType);
+
+    if (_.isObject(iOld) || _.isObject(iNew)) {
+      const objTemp = _.isObject(iOld) ? iOld : iNew;
+      const key = _.keys(objTemp);
+      return `${acc}${newLine}${insertWSpace(shift)}${graphTypeMapping}${iKey}: {` +
+        `${newLine}${insertWSpace(shift + 8)}${key}: ${objTemp[key]}` +
+        `${newLine}${insertWSpace(shift + 4)}}`;
     }
-    return `${acc}${newLine}${insertWSpace(shift)}${status}${item.key}: {` +
-        `${stringBuilder(item.children, shift + 4)}${newLine}${insertWSpace(shift + 4)}}`;
+    if (iType === 'changed') {
+      return `${acc}${newLine}${insertWSpace(shift)}${graphTypeMapping}${iKey}: ${iNew}` +
+        `${newLine}${insertWSpace(shift)}${convertType('removed')}${iKey}: ${iOld}`;
+    }
+    if (iType === 'unchanged' || iType === 'removed') {
+      return `${acc}${newLine}${insertWSpace(shift)}${graphTypeMapping}${iKey}: ${iOld}`;
+    }
+    return `${acc}${newLine}${insertWSpace(shift)}${graphTypeMapping}${iKey}: ${iNew}`;
   }, '');
+};
 
 export default (ast) => {
   const res = _.reduce(ast, (acc, item) => {
-    const status = convertType(item.type);
-    return `${acc}${newLine}${status}${item.key}: {` +
-     `${stringBuilder(item.children, 3)}${newLine}${insertWSpace(3)}}`;
+    const graphTypeMapping = convertType(item.type);
+    return `${acc}${newLine}${graphTypeMapping}${item.key}: {` +
+     `${stringBuilder(item, 3)}${newLine}${insertWSpace(3)}}`;
   }, '');
   return `{${res}${newLine}}`;
 };

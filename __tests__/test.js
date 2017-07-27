@@ -37,7 +37,7 @@ describe('gendiff tests', () => {
         fee: 100500
     }
 }`;
-/*
+
   it('Compare two .json files', () => {
     const before = generatePath('before', 'json');
     const after = generatePath('after', 'json');
@@ -55,13 +55,13 @@ describe('gendiff tests', () => {
     const after = generatePath('after', 'ini');
     expect(gendiff(before, after)).toBe(result);
   });
-*/
-    it('Compare two nested .json files', () => {
+
+  it('Compare two nested .json files', () => {
     const before = generatePath('before', 'json', true);
     const after = generatePath('after', 'json', true);
     expect(gendiff(before, after)).toBe(result2);
   });
-/*
+
   it('Compare two nested .yml files', () => {
     const before = generatePath('before', 'yml', true);
     const after = generatePath('after', 'yml', true);
@@ -73,5 +73,4 @@ describe('gendiff tests', () => {
     const after = generatePath('after', 'ini', true);
     expect(gendiff(before, after)).toBe(result2);
   });
-  */
 });

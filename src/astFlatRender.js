@@ -1,16 +1,12 @@
 const newLine = '\n';
 
 const convertType = (data) => {
-  switch (data) {
-    case 'changed':
-      return '  + ';
-    case 'added':
-      return '  + ';
-    case 'removed':
-      return '  - ';
-    default:
-      return '    ';
-  }
+  const graphicalTypePresentation = {
+    changed: '  + ',
+    added: '  + ',
+    removed: '  - ',
+  };
+  return graphicalTypePresentation[data] || '    ';
 };
 
 const stringBuilder = (obj) => {
