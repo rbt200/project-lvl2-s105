@@ -24,8 +24,8 @@ describe('gendiff tests', () => {
   });
 
   it('Compare two .ini files', () => {
-    const before = generatePath('before', 'yml');
-    const after = generatePath('after', 'yml');
+    const before = generatePath('before', 'ini');
+    const after = generatePath('after', 'ini');
     expect(gendiff(before, after)).toBe(result);
   });
 });
