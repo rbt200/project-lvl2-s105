@@ -6,18 +6,22 @@ import _ from 'lodash';
   key: 'key',
   valueOld: 'value',
   valueNew: 'value',
+  children: [{}]
 }
 */
 
 const getType = (val1, val2) => {
-  if (val1 === val2) {
-    return 'unchanged';
+  if (_.isObject(val1) && _.isObject(val2)) {
+    return 'nested';
   }
   if (!val1) {
     return 'added';
   }
   if (!val2) {
     return 'removed';
+  }
+  if (val1 === val2) {
+    return 'unchanged';
   }
   return 'changed';
 };
@@ -29,6 +33,13 @@ const astBuilder = (obj1, obj2) => {
     const valueOld = obj1[key];
     const valueNew = obj2[key];
     const type = getType(valueOld, valueNew);
+    if (type === 'nested') {
+      return {
+        type,
+        key,
+        children: astBuilder(valueOld, valueNew),
+      };
+    }
     return {
       type,
       key,
