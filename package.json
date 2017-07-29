@@ -1,6 +1,6 @@
 {
   "name": "gendiff-rbt200",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Compare two config files and show the difference.",
   "main": "dist/index.js",
   "bin": {
@@ -27,15 +27,16 @@
     "babel-cli": "^6.24.1",
     "babel-core": "*",
     "babel-eslint": "^7.2.3",
-    "babel-preset-env": "*",
-    "babel-preset-stage-0": "*",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-stage-0": "^6.24.1",
     "eslint": "^3.19.0",
-    "eslint-config-airbnb-base": "^11.2.0",
-    "eslint-plugin-import": "^2.2.0",
-    "jest": "*"
+    "eslint-config-airbnb-base": "^11.3.1",
+    "eslint-plugin-import": "^2.7.0",
+    "jest": "^20.0.4",
+    "lint": "^1.1.2"
   },
   "dependencies": {
-    "commander": "*",
+    "commander": "^2.11.0",
     "ini": "^1.3.4",
     "js-yaml": "^3.9.0",
     "lodash": "*"
