@@ -38,6 +38,20 @@ describe('gendiff tests', () => {
     }
 }`;
 
+  const result3 =
+`Property 'timeout' was updated. From '50' to '20'
+Property 'proxy' was removed
+Property 'verbose' was added with value: true`;
+
+  const result4 =
+`Property 'common.setting2' was removed
+Property 'common.setting6' was removed
+Property 'common.setting4' was added with value: blah blah
+Property 'common.setting5' was added with complex value
+Property 'group1.baz' was updated. From 'bas' to 'bars'
+Property 'group2' was removed
+Property 'group3' was added with complex value`;
+
   it('Compare two .json files', () => {
     const before = generatePath('before', 'json');
     const after = generatePath('after', 'json');
@@ -72,5 +86,41 @@ describe('gendiff tests', () => {
     const before = generatePath('before', 'ini', true);
     const after = generatePath('after', 'ini', true);
     expect(gendiff(before, after)).toBe(result2);
+  });
+
+  it('Compare two .json files with plain format', () => {
+    const before = generatePath('before', 'json');
+    const after = generatePath('after', 'json');
+    expect(gendiff(before, after, 'plain')).toBe(result3);
+  });
+
+  it('Compare two .yml files with plain format', () => {
+    const before = generatePath('before', 'yml');
+    const after = generatePath('after', 'yml');
+    expect(gendiff(before, after, 'plain')).toBe(result3);
+  });
+
+  it('Compare two .ini files with plain foramt', () => {
+    const before = generatePath('before', 'ini');
+    const after = generatePath('after', 'ini');
+    expect(gendiff(before, after, 'plain')).toBe(result3);
+  });
+
+  it('Compare two nested .json files with plain format', () => {
+    const before = generatePath('before', 'json', true);
+    const after = generatePath('after', 'json', true);
+    expect(gendiff(before, after, 'plain')).toBe(result4);
+  });
+
+  it('Compare two nested .yml files  with plain format', () => {
+    const before = generatePath('before', 'yml', true);
+    const after = generatePath('after', 'yml', true);
+    expect(gendiff(before, after, 'plain')).toBe(result4);
+  });
+
+  it('Compare two nested .ini files  with plain format', () => {
+    const before = generatePath('before', 'ini', true);
+    const after = generatePath('after', 'ini', true);
+    expect(gendiff(before, after, 'plain')).toBe(result4);
   });
 });

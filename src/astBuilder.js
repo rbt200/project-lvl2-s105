@@ -14,10 +14,10 @@ const getType = (val1, val2) => {
   if (_.isObject(val1) && _.isObject(val2)) {
     return 'nested';
   }
-  if (!val1) {
+  if (_.isUndefined(val1)) {
     return 'added';
   }
-  if (!val2) {
+  if (_.isUndefined(val2)) {
     return 'removed';
   }
   if (val1 === val2) {
