@@ -1,68 +1,49 @@
 import _ from 'lodash';
 
 const newLine = '\n';
-const insertWSpace = quantity => _.repeat(' ', 1 + quantity);
+const insertWSpace = (quantity = 0) => _.repeat('    ', quantity);
 
-const convertType = (data) => {
-  const graphicalTypePresentation = {
+const convertType = (type) => {
+  const graphTypes = {
     changed: '  + ',
     added: '  + ',
     removed: '  - ',
+    unchanged: '    ',
+    nested: '    ',
   };
-  return graphicalTypePresentation[data] || '    ';
+  return graphTypes[type];
 };
 
-const stringFlatBuilder = (obj) => {
-  const str = `${newLine}${convertType(obj.type)}${obj.key}:` +
-  ` ${obj.valueNew !== undefined ? obj.valueNew : obj.valueOld}`;
-  if (obj.type === 'changed') {
-    return str.concat(`${newLine}${convertType('removed')}${obj.key}: ${obj.valueOld}`);
-  }
-  return str;
-};
+const stringBuilder = (obj, shift = 0) =>
+  obj.reduce((acc, item) => {
+    const type = item.type;
+    const key = item.key;
+    const valOld = item.valueOld;
+    const valNew = item.valueNew;
+    const graphType = convertType(type);
 
-const stringNestedBuilder = (obj, shift = 0) => {
-  if (!obj.children) {
-    const valOld = obj.valueOld;
-    const valNew = obj.valueNew;
-    const objTemp = valOld !== undefined ? valOld : valNew;
-    const key = _.keys(objTemp);
-    return `${newLine}${insertWSpace(shift + 4)}${key}: ${objTemp[key]}`;
-  }
-
-  return _.reduce(obj.children, (acc, item) => {
-    const iKey = item.key;
-    const iType = item.type;
-    const iOld = item.valueOld;
-    const iNew = item.valueNew;
-    const graphTypeMapping = convertType(iType);
-
-    if (_.isObject(iOld) || _.isObject(iNew)) {
-      const objTemp = _.isObject(iOld) ? iOld : iNew;
-      const key = _.keys(objTemp);
-      return `${acc}${newLine}${insertWSpace(shift)}${graphTypeMapping}${iKey}: {` +
-        `${newLine}${insertWSpace(shift + 8)}${key}: ${objTemp[key]}` +
-        `${newLine}${insertWSpace(shift + 4)}}`;
+    if (type === 'nested') {
+      return acc.concat(`${newLine}${graphType}${key}: {` +
+        `${stringBuilder(item.children, shift + 1)}${newLine}${insertWSpace(shift + 1)}}`);
     }
-    if (iType === 'changed') {
-      return `${acc}${newLine}${insertWSpace(shift)}${graphTypeMapping}${iKey}: ${iNew}` +
-        `${newLine}${insertWSpace(shift)}${convertType('removed')}${iKey}: ${iOld}`;
+    if (_.isObject(valOld) || _.isObject(valNew)) {
+      const object = _.isObject(valOld) ? valOld : valNew;
+      const localKey = Object.keys(object);
+      const localValue = object[localKey];
+      return acc.concat(`${newLine}${insertWSpace(shift)}${graphType}${key}: {` +
+        `${newLine}${insertWSpace(shift + 2)}${localKey}: ${localValue}${newLine}${insertWSpace(shift + 1)}}`);
     }
-    if (iType === 'unchanged' || iType === 'removed') {
-      return `${acc}${newLine}${insertWSpace(shift)}${graphTypeMapping}${iKey}: ${iOld}`;
+    if (type === 'unchanged' || type === 'removed') {
+      return acc.concat(`${newLine}${insertWSpace(shift)}${graphType}${key}: ${valOld}`);
     }
-    return `${acc}${newLine}${insertWSpace(shift)}${graphTypeMapping}${iKey}: ${iNew}`;
+    if (type === 'changed') {
+      return acc.concat(`${newLine}${insertWSpace(shift)}${graphType}${key}: ${valNew}` +
+        `${newLine}${insertWSpace(shift)}${'  - '}${key}: ${valOld}`);
+    }
+    if (type === 'added') {
+      return acc.concat(`${newLine}${insertWSpace(shift)}${graphType}${key}: ${valNew}`);
+    }
+    return acc;
   }, '');
-};
 
-export default (ast) => {
-  const render = _.keys(ast[0]).find(item => item === 'children');
-  if (render) {
-    return `{${_.reduce(ast, (acc, item) => {
-      const graphTypeMapping = convertType(item.type);
-      return `${acc}${newLine}${graphTypeMapping}${item.key}: {` +
-     `${stringNestedBuilder(item, 3)}${newLine}${insertWSpace(3)}}`;
-    }, '')}${newLine}}`;
-  }
-  return `{${ast.reduce((acc, item) => acc.concat(stringFlatBuilder(item)), '')}${newLine}}`;
-};
+export default ast => `{${stringBuilder(ast)}${newLine}}`;
