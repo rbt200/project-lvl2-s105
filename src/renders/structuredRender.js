@@ -3,47 +3,45 @@ import _ from 'lodash';
 const newLine = '\n';
 const insertWSpace = (quantity = 0) => _.repeat('    ', quantity);
 
-const convertType = (type) => {
-  const graphTypes = {
-    changed: '  + ',
-    added: '  + ',
-    removed: '  - ',
-    unchanged: '    ',
-    nested: '    ',
-  };
-  return graphTypes[type];
+const stringBuilder = (object, shift) => {
+  if (_.isObject(object)) {
+    const keys = Object.keys(object);
+    return `{${keys.reduce((acc, key) => { if (key){}return `${acc}${newLine}${insertWSpace(shift + 2)}${key}: ` +
+    `${object[key]}` ;}, '')}${newLine}${insertWSpace(shift  + 1)}}`;
+  }
+  return object;
 };
 
-const stringBuilder = (obj, shift = 0) =>
-  obj.reduce((acc, item) => {
-    const type = item.type;
-    const key = item.key;
-    const valOld = item.valueOld;
-    const valNew = item.valueNew;
-    const graphType = convertType(type);
+const getAdded = (type, item, shift) => {
+  return `${newLine}${insertWSpace(shift)}${'  + '}${item.key}: ${stringBuilder(item.valueNew, shift)}`;
+};
+const getRemoved = (type, item, shift) => {
+  return `${newLine}${insertWSpace(shift)}${'  - '}${item.key}: ${stringBuilder(item.valueOld, shift)}`;
+};
+const getUnchanged = (type, item, shift) => {
+  return `${newLine}${insertWSpace(shift)}${'    '}${item.key}: ${item.valueOld}`;
+};
+const getChanged = (type, item, shift) => {
+  return `${newLine}${insertWSpace(shift)}${'  + '}${item.key}: ${stringBuilder(item.valueNew, shift)}` +
+        `${newLine}${insertWSpace(shift)}${'  - '}${item.key}: ${stringBuilder(item.valueOld, shift)}`;
+};
+const getNested = (type, item, shift, render) => {
+  return `${newLine}${insertWSpace(shift)}${'    '}${item.key}: {` +
+        `${render}${newLine}${insertWSpace(shift + 1)}}`;
+};
 
-    if (type === 'nested') {
-      return acc.concat(`${newLine}${graphType}${key}: {` +
-        `${stringBuilder(item.children, shift + 1)}${newLine}${insertWSpace(shift + 1)}}`);
-    }
-    if (_.isObject(valOld) || _.isObject(valNew)) {
-      const object = _.isObject(valOld) ? valOld : valNew;
-      const localKey = Object.keys(object);
-      const localValue = object[localKey];
-      return acc.concat(`${newLine}${insertWSpace(shift)}${graphType}${key}: {` +
-        `${newLine}${insertWSpace(shift + 2)}${localKey}: ${localValue}${newLine}${insertWSpace(shift + 1)}}`);
-    }
-    if (type === 'unchanged' || type === 'removed') {
-      return acc.concat(`${newLine}${insertWSpace(shift)}${graphType}${key}: ${valOld}`);
-    }
-    if (type === 'changed') {
-      return acc.concat(`${newLine}${insertWSpace(shift)}${graphType}${key}: ${valNew}` +
-        `${newLine}${insertWSpace(shift)}${'  - '}${key}: ${valOld}`);
-    }
-    if (type === 'added') {
-      return acc.concat(`${newLine}${insertWSpace(shift)}${graphType}${key}: ${valNew}`);
-    }
-    return acc;
+
+const render = (ast, shift = 0) =>
+  ast.reduce((acc, item) => {
+    const type = item.type;
+    const stringFunctions = {
+      nested: getNested(type, item, shift, render(item.children, shift + 1)),
+      unchanged: getUnchanged(type, item, shift),
+      changed: getChanged(type, item, shift),
+      added: getAdded(type, item, shift),
+      removed: getRemoved(type, item, shift),
+    };
+    return acc.concat(stringFunctions[type]);
   }, '');
 
-export default ast => `{${stringBuilder(ast)}${newLine}}`;
+export default ast => `{${render(ast)}${newLine}}`;

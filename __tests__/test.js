@@ -52,6 +52,118 @@ Property 'group1.baz' was updated. From 'bas' to 'bars'
 Property 'group2' was removed
 Property 'group3' was added with complex value`;
 
+  const result5 =
+  `[
+  {
+    "type": "nested",
+    "key": "common",
+    "valueOld": {
+      "setting1": "Value 1",
+      "setting2": "200",
+      "setting3": true,
+      "setting6": {
+        "key": "value"
+      }
+    },
+    "valueNew": {
+      "setting1": "Value 1",
+      "setting3": true,
+      "setting4": "blah blah",
+      "setting5": {
+        "key5": "value5"
+      }
+    },
+    "children": [
+      {
+        "type": "unchanged",
+        "key": "setting1",
+        "valueOld": "Value 1",
+        "valueNew": "Value 1",
+        "children": []
+      },
+      {
+        "type": "removed",
+        "key": "setting2",
+        "valueOld": "200",
+        "children": []
+      },
+      {
+        "type": "unchanged",
+        "key": "setting3",
+        "valueOld": true,
+        "valueNew": true,
+        "children": []
+      },
+      {
+        "type": "removed",
+        "key": "setting6",
+        "valueOld": {
+          "key": "value"
+        },
+        "children": []
+      },
+      {
+        "type": "added",
+        "key": "setting4",
+        "valueNew": "blah blah",
+        "children": []
+      },
+      {
+        "type": "added",
+        "key": "setting5",
+        "valueNew": {
+          "key5": "value5"
+        },
+        "children": []
+      }
+    ]
+  },
+  {
+    "type": "nested",
+    "key": "group1",
+    "valueOld": {
+      "baz": "bas",
+      "foo": "bar"
+    },
+    "valueNew": {
+      "foo": "bar",
+      "baz": "bars"
+    },
+    "children": [
+      {
+        "type": "changed",
+        "key": "baz",
+        "valueOld": "bas",
+        "valueNew": "bars",
+        "children": []
+      },
+      {
+        "type": "unchanged",
+        "key": "foo",
+        "valueOld": "bar",
+        "valueNew": "bar",
+        "children": []
+      }
+    ]
+  },
+  {
+    "type": "removed",
+    "key": "group2",
+    "valueOld": {
+      "abc": "12345"
+    },
+    "children": []
+  },
+  {
+    "type": "added",
+    "key": "group3",
+    "valueNew": {
+      "fee": "100500"
+    },
+    "children": []
+  }
+]`;
+
   it('Compare two .json files', () => {
     const before = generatePath('before', 'json');
     const after = generatePath('after', 'json');
@@ -122,5 +234,23 @@ Property 'group3' was added with complex value`;
     const before = generatePath('before', 'ini', true);
     const after = generatePath('after', 'ini', true);
     expect(gendiff(before, after, 'plain')).toBe(result4);
+  });
+
+  it('Compare two nested .json files with json format', () => {
+    const before = generatePath('before', 'json', true);
+    const after = generatePath('after', 'json', true);
+    expect(gendiff(before, after, 'json')).toBe(result5);
+  });
+
+  it('Compare two nested .ini files with json format', () => {
+    const before = generatePath('before', 'ini', true);
+    const after = generatePath('after', 'ini', true);
+    expect(gendiff(before, after, 'json')).toBe(result5);
+  });
+
+  it('Compare two nested .yml files with json format', () => {
+    const before = generatePath('before', 'yml', true);
+    const after = generatePath('after', 'yml', true);
+    expect(gendiff(before, after, 'json')).toBe(result5);
   });
 });
