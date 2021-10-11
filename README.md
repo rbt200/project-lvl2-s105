@@ -1,6 +1,6 @@
-# The program compares two ini, json or yml files and shows the difference.
+# npm install gendiff-rbt200
 
-npm install gendiff-rbt200
+The program compares two ini, json or yml files and shows the difference.
 
 [![Build Status](https://travis-ci.org/rbt200/project-lvl2-s105.svg?branch=master)](https://travis-ci.org/rbt200/project-lvl2-s105)
 [![Code Climate](https://codeclimate.com/github/rbt200/project-lvl2-s105/badges/gpa.svg)](https://codeclimate.com/github/rbt200/project-lvl2-s105)
